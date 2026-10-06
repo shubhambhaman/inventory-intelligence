@@ -1,0 +1,13 @@
+{
+  "name": "inventory-intelligence-platform",
+  "version": "1.0.0",
+  "description": "Inventory Intelligence Platform",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --env-file=.env index.js"
+  },
+  "keywords": [],
+  "author": "Shubham",
+  "license": "ISC",
+  "type": "commonjs"
+}
