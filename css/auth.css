@@ -1,0 +1,141 @@
+/* ===== Inventory Intelligence Platform - authentication styles ===== */
+
+/* 1. Colours and font (change them here) */
+:root {
+  --ink: #14202b;
+  --ink-2: #41505c;
+  --muted: #6b7a85;
+  --paper: #eef2f0;
+  --line: #d5dcd9;
+  --line-strong: #aeb9b4;
+  --accent: #0f6b5c;
+  --accent-hover: #0b574b;
+  --ring: rgba(15, 107, 92, .28);
+  --error: #b42318;
+  --error-bg: #fdf1ef;
+  --error-line: #f3c5be;
+  --font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* 2. Base */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; font: 400 15px/1.5 var(--font); color: var(--ink); background: var(--paper); -webkit-font-smoothing: antialiased; }
+[hidden] { display: none !important; }
+
+/* 3. Layout: dark left panel + light main area */
+.shell { min-height: 100%; display: grid; grid-template-columns: minmax(300px, 38%) 1fr; }
+.rail {
+  display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding: 40px;
+  color: #dbe5e1; background-color: var(--ink);
+  background-image: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+.brand { display: flex; align-items: center; gap: 12px; color: #fff; font-weight: 600; font-size: 17px; }
+.rail p { margin: 0; max-width: 32ch; color: #a9b9b3; }
+.rail small { color: #7f9189; font-size: 12.5px; }
+.stage { display: grid; place-items: center; padding: 40px 24px; }
+
+/* 4. Card */
+.card {
+  width: 100%; max-width: 440px; padding: 36px; background: #fff;
+  border: 1px solid var(--line); border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(20,32,43,.05), 0 12px 32px -16px rgba(20,32,43,.18);
+}
+.card h1 { margin: 0 0 6px; font-size: 24px; line-height: 1.25; font-weight: 600; letter-spacing: -.02em; }
+.sub { margin: 0 0 24px; color: var(--ink-2); }
+.auth-form { display: grid; gap: 18px; }
+
+/* 5. Fields */
+.field { display: grid; gap: 6px; }
+.field > label { font-size: 13.5px; font-weight: 500; }
+.control { position: relative; }
+input[type="text"], input[type="email"], input[type="password"] {
+  width: 100%; height: 46px; padding: 0 14px; font: inherit; color: var(--ink); background: #fff;
+  border: 1px solid var(--line-strong); border-radius: 10px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.control input { padding-right: 48px; }
+input::placeholder { color: #97a3ab; }
+input:hover { border-color: #8a9892; }
+input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--ring); }
+input[aria-invalid="true"] { border-color: var(--error); background: var(--error-bg); }
+input[aria-invalid="true"]:focus { box-shadow: 0 0 0 4px rgba(180,35,24,.18); }
+input:disabled { background: #f1f4f3; color: var(--muted); cursor: not-allowed; }
+.field-error { margin: 0; font-size: 13px; color: var(--error); }
+.field-error:empty { display: none; }
+.hint { margin: 0; font-size: 12.5px; color: var(--muted); }
+
+/* Show/hide password button */
+.toggle {
+  position: absolute; top: 50%; right: 6px; transform: translateY(-50%);
+  display: grid; place-items: center; width: 34px; height: 34px; padding: 0;
+  color: var(--muted); background: none; border: 0; border-radius: 8px; cursor: pointer;
+  transition: background-color .15s, color .15s;
+}
+.toggle:hover { background: var(--paper); color: var(--ink); }
+.toggle:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+.toggle:disabled { opacity: .5; cursor: not-allowed; }
+.toggle .eye-off { display: none; }
+.toggle[aria-pressed="true"] .eye-on { display: none; }
+.toggle[aria-pressed="true"] .eye-off { display: block; }
+
+/* Checkbox */
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--ink-2); cursor: pointer; }
+.check input {
+  appearance: none; flex: none; width: 18px; height: 18px; margin: 1px 0 0; background: #fff;
+  border: 1px solid var(--line-strong); border-radius: 5px; cursor: pointer; display: grid; place-content: center;
+  transition: background-color .15s, border-color .15s, box-shadow .15s;
+}
+.check input::after {
+  content: ""; width: 9px; height: 5px; border: 2px solid #fff; border-top: 0; border-right: 0;
+  transform: rotate(-45deg) translate(1px, -1px) scale(0);
+}
+.check input:checked { background: var(--accent); border-color: var(--accent); }
+.check input:checked::after { transform: rotate(-45deg) translate(1px, -1px) scale(1); }
+.check input:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--ring); }
+.check input[aria-invalid="true"] { border-color: var(--error); }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+
+/* 6. Links and buttons */
+a { color: var(--accent); font-weight: 500; text-decoration: none; border-radius: 4px; }
+a:hover { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+a:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 46px; padding: 0 18px;
+  font: 600 15px var(--font); color: #fff; background: var(--accent); border: 1px solid var(--accent);
+  border-radius: 10px; cursor: pointer; transition: background-color .15s, box-shadow .15s;
+}
+.btn:hover { background: var(--accent-hover); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--ring); }
+.btn:disabled { cursor: not-allowed; background: #7fa9a1; border-color: #7fa9a1; }
+
+/* Loading spinner (visible only while the button has aria-busy="true") */
+.spinner {
+  display: none; width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; animation: spin .7s linear infinite;
+}
+.btn[aria-busy="true"] .spinner { display: block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 7. Error alert */
+.alert { padding: 12px 14px; font-size: 14px; color: #7a271d; background: var(--error-bg); border: 1px solid var(--error-line); border-radius: 10px; }
+.alert-title { color: var(--error); font-weight: 600; margin-right: 4px; }
+
+/* 8. Footer link under the card */
+.switch { margin: 24px 0 0; padding-top: 20px; border-top: 1px solid var(--line); text-align: center; font-size: 14px; color: var(--ink-2); }
+
+/* 9. Responsive */
+@media (max-width: 900px) {  /* tablet: panel becomes a top bar */
+  .shell { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .rail { flex-direction: row; align-items: center; padding: 16px 24px; background-image: none; }
+  .rail p, .rail small { display: none; }
+  .stage { place-items: start center; padding: 28px 16px 40px; }
+}
+@media (max-width: 480px) {  /* mobile */
+  .card { padding: 24px 20px; border-radius: 14px; }
+  .card h1 { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation-duration: 1.5s !important; } }

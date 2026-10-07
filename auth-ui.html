@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · Inventory Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14202b; --ink-2:#41505c; --muted:#6b7a85;
+  --paper:#eef2f0; --surface:#fff; --line:#d5dcd9; --line-strong:#aeb9b4;
+  --accent:#0f6b5c; --accent-h:#0b574b; --ring:rgba(15,107,92,.28);
+  --err:#b42318; --err-bg:#fdf1ef; --err-line:#f3c5be;
+  --font:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font:400 15px/1.5 var(--font);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+
+/* App shell */
+.shell{min-height:100%;display:grid;grid-template-columns:minmax(300px,38%) 1fr}
+.rail{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:32px;padding:40px;color:#dbe5e1;background-color:var(--ink);
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:44px 44px}
+.brand{display:flex;align-items:center;gap:12px;color:#fff;font-weight:600;font-size:17px;letter-spacing:-.01em}
+.brand svg{flex:none}
+.rail p{margin:0;max-width:32ch;font-size:15px;color:#a9b9b3}
+.rail small{color:#7f9189;font-size:12.5px}
+.stage{display:grid;place-items:center;padding:40px 24px}
+
+/* Card */
+.card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:36px;
+  box-shadow:0 1px 2px rgba(20,32,43,.05),0 12px 32px -16px rgba(20,32,43,.18)}
+.card h1{margin:0 0 6px;font-size:24px;line-height:1.25;letter-spacing:-.02em;font-weight:600}
+.card h1:focus{outline:none}
+.sub{margin:0 0 24px;color:var(--ink-2)}
+form{display:grid;gap:18px}
+
+/* Fields */
+.field{display:grid;gap:6px}
+.field label,.label-row{font-size:13.5px;font-weight:500;color:var(--ink)}
+.label-row{display:flex;justify-content:space-between;align-items:baseline}
+.control{position:relative}
+input[type=text],input[type=email],input[type=password]{width:100%;height:46px;padding:0 14px;font:inherit;color:var(--ink);background:#fff;
+  border:1px solid var(--line-strong);border-radius:10px;transition:border-color .15s,box-shadow .15s,background-color .15s}
+input::placeholder{color:#97a3ab}
+input:hover{border-color:#8a9892}
+input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--ring)}
+input[aria-invalid=true]{border-color:var(--err);background:var(--err-bg)}
+input[aria-invalid=true]:focus{box-shadow:0 0 0 4px rgba(180,35,24,.18)}
+input:disabled{background:#f1f4f3;color:var(--muted);cursor:not-allowed}
+.control.has-toggle input{padding-right:48px}
+.toggle{position:absolute;top:50%;right:6px;transform:translateY(-50%);display:grid;place-items:center;width:34px;height:34px;padding:0;
+  color:var(--muted);background:none;border:0;border-radius:8px;cursor:pointer;transition:background-color .15s,color .15s}
+.toggle:hover{background:#eef2f0;color:var(--ink)}
+.toggle:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring)}
+.toggle:disabled{cursor:not-allowed;opacity:.5}
+.toggle .off{display:none}
+.toggle[aria-pressed=true] .on{display:none}
+.toggle[aria-pressed=true] .off{display:block}
+.error{display:flex;gap:6px;align-items:flex-start;margin:0;font-size:13px;color:var(--err)}
+.error:empty{display:none}
+.hint{margin:0;font-size:12.5px;color:var(--muted)}
+
+/* Checkbox */
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--ink-2);cursor:pointer}
+.check input{appearance:none;flex:none;width:18px;height:18px;margin:1px 0 0;border:1px solid var(--line-strong);border-radius:5px;background:#fff;
+  display:grid;place-content:center;cursor:pointer;transition:background-color .15s,border-color .15s,box-shadow .15s}
+.check input::after{content:"";width:9px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px) scale(0);transition:transform .12s}
+.check input:checked{background:var(--accent);border-color:var(--accent)}
+.check input:checked::after{transform:rotate(-45deg) translate(1px,-1px) scale(1)}
+.check input:focus-visible{outline:none;box-shadow:0 0 0 4px var(--ring)}
+.check input[aria-invalid=true]{border-color:var(--err)}
+.check input:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+
+/* Links & buttons */
+a{color:var(--accent);font-weight:500;text-decoration:none;border-radius:4px}
+a:hover{color:var(--accent-h);text-decoration:underline;text-underline-offset:3px}
+a:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring)}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;height:46px;padding:0 18px;font:600 15px var(--font);
+  color:#fff;background:var(--accent);border:1px solid var(--accent);border-radius:10px;cursor:pointer;transition:background-color .15s,box-shadow .15s,transform .05s}
+.btn:hover{background:var(--accent-h)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--ring)}
+.btn:disabled{cursor:not-allowed;background:#7fa9a1;border-color:#7fa9a1}
+.spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.btn[aria-busy=true] .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Alert */
+.alert{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;font-size:14px;color:var(--err);background:var(--err-bg);border:1px solid var(--err-line);border-radius:10px}
+.alert svg{flex:none;margin-top:2px}
+.alert strong{display:block;font-weight:600}
+.alert span{color:#7a271d}
+.switch{margin:24px 0 0;padding-top:20px;border-top:1px solid var(--line);text-align:center;font-size:14px;color:var(--ink-2)}
+
+/* Responsive */
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .rail{flex-direction:row;align-items:center;padding:16px 24px;background-image:none}
+  .rail p,.rail small{display:none}
+  .stage{place-items:start center;padding:28px 16px 40px}
+}
+@media (max-width:480px){
+  .card{padding:24px 20px;border-radius:14px}
+  .card h1{font-size:22px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation-duration:1.5s!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-alert" viewBox="0 0 20 20"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm-.9 4.5h1.8v5h-1.8v-5Zm.9 8.4a1.1 1.1 0 1 1 0-2.2 1.1 1.1 0 0 1 0 2.2Z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.5 6.5A17 17 0 0 0 2 12s3.6 7 10 7a9.700 9.700 0 0 0 4.200-.9M9.900 9.900a3 3 0 0 0 4.200 4.200"/></symbol>
+</svg>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="2" y="2" width="12" height="12" rx="3" fill="#fff"/>
+        <rect x="18" y="2" width="12" height="12" rx="3" fill="#fff" opacity=".45"/>
+        <rect x="2" y="18" width="12" height="12" rx="3" fill="#fff" opacity=".45"/>
+        <rect x="18" y="18" width="12" height="12" rx="3" fill="#3fc1a8"/>
+      </svg>
+      Inventory Intelligence Platform
+    </div>
+    <p>Sign in to your workspace to manage stock with confidence.</p>
+    <small>&copy; <span id="year"></span> Inventory Intelligence Platform</small>
+  </aside>
+
+  <main class="stage">
+
+    <!-- LOGIN -->
+    <section class="card" id="screen-login" data-screen="login" aria-labelledby="login-title">
+      <h1 id="login-title" tabindex="-1">Sign in</h1>
+      <p class="sub">Use your work email to access your workspace.</p>
+
+      <form id="login-form" data-form="login" novalidate>
+        <div class="alert" role="alert" data-alert hidden>
+          <svg width="18" height="18"><use href="#i-alert"/></svg>
+          <div><strong data-alert-title></strong><span data-alert-body></span></div>
+        </div>
+
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" placeholder="name@company.com" data-rule="email" aria-describedby="login-email-err" required>
+          <p class="error" id="login-email-err"></p>
+        </div>
+
+        <div class="field">
+          <label for="login-password">Password</label>
+          <div class="control has-toggle">
+            <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" data-rule="required-password" aria-describedby="login-password-err" required>
+            <button type="button" class="toggle" data-toggle="login-password" aria-pressed="false" aria-label="Show password">
+              <svg class="on" width="20" height="20"><use href="#i-eye"/></svg><svg class="off" width="20" height="20"><use href="#i-eye-off"/></svg>
+            </button>
+          </div>
+          <p class="error" id="login-password-err"></p>
+        </div>
+
+        <div class="row">
+          <label class="check"><input type="checkbox" name="remember"> Remember me</label>
+          <a href="#" data-forgot>Forgot password?</a>
+        </div>
+
+        <button class="btn" type="submit"><span class="spinner" aria-hidden="true"></span><span data-label>Sign in</span></button>
+      </form>
+
+      <p class="switch">New to Inventory Intelligence Platform? <a href="#/signup">Create an account</a></p>
+    </section>
+
+    <!-- SIGNUP -->
+    <section class="card" id="screen-signup" data-screen="signup" aria-labelledby="signup-title" hidden>
+      <h1 id="signup-title" tabindex="-1">Create your account</h1>
+      <p class="sub">Enter your details to get started.</p>
+
+      <form id="signup-form" data-form="signup" novalidate>
+        <div class="alert" role="alert" data-alert hidden>
+          <svg width="18" height="18"><use href="#i-alert"/></svg>
+          <div><strong data-alert-title></strong><span data-alert-body></span></div>
+        </div>
+
+        <div class="field">
+          <label for="signup-name">Full name</label>
+          <input id="signup-name" name="fullName" type="text" autocomplete="name" placeholder="Your full name" data-rule="name" aria-describedby="signup-name-err" required>
+          <p class="error" id="signup-name-err"></p>
+        </div>
+
+        <div class="field">
+          <label for="signup-email">Work email</label>
+          <input id="signup-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="name@company.com" data-rule="email" aria-describedby="signup-email-err" required>
+          <p class="error" id="signup-email-err"></p>
+        </div>
+
+        <div class="field">
+          <label for="signup-password">Password</label>
+          <div class="control has-toggle">
+            <input id="signup-password" name="password" type="password" autocomplete="new-password" placeholder="Create a password" data-rule="password" aria-describedby="signup-password-hint signup-password-err" required>
+            <button type="button" class="toggle" data-toggle="signup-password" aria-pressed="false" aria-label="Show password">
+              <svg class="on" width="20" height="20"><use href="#i-eye"/></svg><svg class="off" width="20" height="20"><use href="#i-eye-off"/></svg>
+            </button>
+          </div>
+          <p class="hint" id="signup-password-hint">Use at least 8 characters.</p>
+          <p class="error" id="signup-password-err"></p>
+        </div>
+
+        <div class="field">
+          <label for="signup-confirm">Confirm password</label>
+          <div class="control has-toggle">
+            <input id="signup-confirm" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Re-enter your password" data-rule="confirm" aria-describedby="signup-confirm-err" required>
+            <button type="button" class="toggle" data-toggle="signup-confirm" aria-pressed="false" aria-label="Show password">
+              <svg class="on" width="20" height="20"><use href="#i-eye"/></svg><svg class="off" width="20" height="20"><use href="#i-eye-off"/></svg>
+            </button>
+          </div>
+          <p class="error" id="signup-confirm-err"></p>
+        </div>
+
+        <div class="field">
+          <label class="check"><input type="checkbox" name="terms" data-rule="terms" aria-describedby="signup-terms-err"> <span>I agree to the <a href="#" data-terms>Terms &amp; Conditions</a> and <a href="#" data-terms>Privacy Policy</a>.</span></label>
+          <p class="error" id="signup-terms-err"></p>
+        </div>
+
+        <button class="btn" type="submit"><span class="spinner" aria-hidden="true"></span><span data-label>Create account</span></button>
+      </form>
+
+      <p class="switch">Already have an account? <a href="#/login">Sign in</a></p>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ---------- Config ---------- */
+  const MIN_PASSWORD = 8; // client-side convenience only; the server decides the real rules
+
+  /* ---------- API hooks: connect these to your real backend ---------- */
+  // Receive validated values. Resolve with your API result, or throw an Error
+  // whose .message is safe to show to the user.
+  async function handleLogin({ email, password, remember }) {
+    throw new Error('Sign-in is not connected to a server yet. Connect handleLogin() to your API.');
+  }
+  async function handleSignup({ fullName, email, password, terms }) {
+    throw new Error('Account creation is not connected to a server yet. Connect handleSignup() to your API.');
+  }
+  // Called after a handler resolves successfully (redirect, store session, etc.)
+  function onAuthSuccess(screen, result) {
+    // e.g. window.location.assign('/app');
+  }
+
+  const handlers = { login: handleLogin, signup: handleSignup };
+  const labels = { login: ['Sign in', 'Signing in…'], signup: ['Create account', 'Creating account…'] };
+
+  /* ---------- Validation (pure, reusable) ---------- */
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const rules = {
+    email: v => !v.trim() ? 'Enter your email address.' : !EMAIL_RE.test(v.trim()) ? 'Enter a valid email, like name@company.com.' : '',
+    name: v => v.trim().length < 2 ? 'Enter your full name.' : '',
+    'required-password': v => v ? '' : 'Enter your password.',
+    password: v => !v ? 'Create a password.' : v.length < MIN_PASSWORD ? `Use at least ${MIN_PASSWORD} characters.` : '',
+    confirm: (v, form) => !v ? 'Confirm your password.' : v !== form.elements.password.value ? 'Passwords don\u2019t match.' : '',
+    terms: (v) => v ? '' : 'Accept the terms to create an account.'
+  };
+
+  /* ---------- Field helpers ---------- */
+  const errEl = input => document.getElementById(input.getAttribute('aria-describedby').split(' ').pop());
+
+  function validateField(input) {
+    const rule = rules[input.dataset.rule];
+    if (!rule) return true;
+    const value = input.type === 'checkbox' ? input.checked : input.value;
+    const msg = rule(value, input.form);
+    input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    const el = errEl(input);
+    el.textContent = msg;
+    return !msg;
+  }
+
+  function validateForm(form) {
+    const inputs = [...form.querySelectorAll('[data-rule]')];
+    const results = inputs.map(i => [i, validateField(i)]);
+    const firstBad = results.find(([, ok]) => !ok);
+    return { ok: !firstBad, firstBad: firstBad && firstBad[0] };
+  }
+
+  function showAlert(form, title, body = '') {
+    const box = form.querySelector('[data-alert]');
+    box.querySelector('[data-alert-title]').textContent = title;
+    box.querySelector('[data-alert-body]').textContent = body ? ' ' + body : '';
+    box.hidden = false;
+  }
+  const clearAlert = form => { form.querySelector('[data-alert]').hidden = true; };
+
+  function setLoading(form, loading) {
+    const btn = form.querySelector('.btn');
+    const name = form.dataset.form;
+    btn.setAttribute('aria-busy', loading);
+    btn.disabled = loading;
+    btn.querySelector('[data-label]').textContent = labels[name][loading ? 1 : 0];
+    form.querySelectorAll('input,.toggle').forEach(el => { el.disabled = loading; });
+  }
+
+  /* ---------- Events ---------- */
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('focusout', e => {
+      if (e.target.matches('[data-rule]') && (e.target.value || e.target.getAttribute('aria-invalid') === 'true')) validateField(e.target);
+    });
+    form.addEventListener('input', e => {
+      if (!e.target.matches('[data-rule]')) return;
+      if (e.target.getAttribute('aria-invalid') === 'true') validateField(e.target);
+      // keep confirm-password in sync while editing the first password
+      const c = form.elements.confirmPassword;
+      if (e.target.name === 'password' && c && c.value) validateField(c);
+      clearAlert(form);
+    });
+    form.addEventListener('change', e => { if (e.target.type === 'checkbox' && e.target.dataset.rule) validateField(e.target); });
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      clearAlert(form);
+      const { ok, firstBad } = validateForm(form);
+      if (!ok) {
+        showAlert(form, 'Check the highlighted fields.', 'Fix the errors below and try again.');
+        firstBad.focus();
+        return;
+      }
+      const name = form.dataset.form;
+      const data = Object.fromEntries(new FormData(form));
+      const payload = name === 'login'
+        ? { email: data.email.trim(), password: data.password, remember: form.elements.remember.checked }
+        : { fullName: data.fullName.trim(), email: data.email.trim(), password: data.password, terms: form.elements.terms.checked };
+      setLoading(form, true);
+      try {
+        const result = await handlers[name](payload);
+        onAuthSuccess(name, result);
+      } catch (err) {
+        showAlert(form, name === 'login' ? 'Couldn\u2019t sign you in.' : 'Couldn\u2019t create your account.', err && err.message ? err.message : 'Something went wrong. Try again.');
+      } finally {
+        setLoading(form, false);
+      }
+    });
+  });
+
+  // Show / hide password
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-toggle]');
+    if (t) {
+      const input = document.getElementById(t.dataset.toggle);
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      t.setAttribute('aria-pressed', show);
+      t.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      return;
+    }
+    // UI-only links: wire these to real pages later
+    if (e.target.closest('[data-forgot],[data-terms]')) e.preventDefault();
+  });
+
+  /* ---------- Screen switching (hash routes: #/login, #/signup) ---------- */
+  const titles = { login: 'Sign in', signup: 'Create account' };
+  function route() {
+    const name = location.hash === '#/signup' ? 'signup' : 'login';
+    document.querySelectorAll('[data-screen]').forEach(s => { s.hidden = s.dataset.screen !== name; });
+    document.title = `${titles[name]} \u00b7 Inventory Intelligence Platform`;
+    if (route.ready) document.getElementById(`${name}-title`).focus();
+    route.ready = true;
+  }
+  window.addEventListener('hashchange', route);
+  route();
+  document.getElementById('year').textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
