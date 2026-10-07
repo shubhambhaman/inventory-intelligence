@@ -1,0 +1,98 @@
+name: Inventory Intelligence CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  php-quality:
+    name: PHP Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo, pdo_mysql
+          coverage: none
+
+      - name: Show PHP version
+        run: php -v
+
+      - name: Verify required PHP extensions
+        run: |
+          php -m | grep -i '^PDO$'
+          php -m | grep -i '^pdo_mysql$'
+
+      - name: PHP syntax check
+        shell: bash
+        run: |
+          set -e
+
+          find . \
+            -type f \
+            -name "*.php" \
+            -not -path "./.git/*" \
+            -print0 |
+          while IFS= read -r -d '' file; do
+            php -l "$file"
+          done
+
+  database:
+    name: Database Migration Checks
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:10.4
+        env:
+          MYSQL_DATABASE: inventory_intelligence
+          MYSQL_USER: inventory_ci
+          MYSQL_PASSWORD: inventory_ci_password
+          MYSQL_ROOT_PASSWORD: root_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh
+          --connect
+          --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo, pdo_mysql
+          coverage: none
+
+      - name: Create CI environment file
+        shell: bash
+        run: |
+          cat > .env <<'EOF'
+          APP_ENV=testing
+          APP_DEBUG=false
+          APP_NAME=Inventory Intelligence Platform
+
+          DB_HOST=127.0.0.1
+          DB_NAME=inventory_intelligence
+          DB_USER=inventory_ci
+          DB_PASSWORD=inventory_ci_password
+          DB_CHARSET=utf8mb4
+          EOF
+
+      - name: Run database migrations
+        run: php scripts/migrate.php
