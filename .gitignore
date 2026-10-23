@@ -7,3 +7,8 @@ node_modules/
 
 .DS_Store
 Thumbs.db
+# Local backups and temporary diagnostic files
+*.bak
+*.backup.php
+*.zip
+test/.stock-concurrency-*

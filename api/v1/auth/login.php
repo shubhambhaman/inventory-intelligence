@@ -18,44 +18,9 @@ header('Content-Type: application/json; charset=utf-8');
  * ---------------------------------------------------------
  */
 
+require_once __DIR__ . '/../../../config/session.php';
 require_once __DIR__ . '/../../../config/db.php';
 require_once __DIR__ . '/../../../config/csrf.php';
-
-
-/**
- * ---------------------------------------------------------
- * Secure session cookie configuration
- * ---------------------------------------------------------
- *
- * IMPORTANT:
- * This MUST happen before session_start().
- *
- * CSRF validation also depends on the PHP session,
- * therefore the session configuration must be completed
- * before CSRF validation is performed.
- */
-
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'secure' => (
-        !empty($_SERVER['HTTPS']) &&
-        $_SERVER['HTTPS'] !== 'off'
-    ),
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-
-
-/**
- * ---------------------------------------------------------
- * Start session
- * ---------------------------------------------------------
- */
-
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
 
 
 /**

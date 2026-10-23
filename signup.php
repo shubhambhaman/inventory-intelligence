@@ -1,7 +1,6 @@
 <?php
 
-session_start();
-
+require_once __DIR__ . '/config/session.php';
 require_once __DIR__ . '/config/csrf.php';
 
 if (
@@ -23,11 +22,11 @@ $csrfToken = csrf_token();
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Create account · Inventory Intelligence Platform</title>
+  <title>Create account Â· Inventory Intelligence Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
 </head>
 <body>
 <div class="shell">
@@ -291,7 +290,7 @@ $csrfToken = csrf_token();
           <span
             class="btn-label"
             data-default="Create account"
-            data-loading="Creating account…"
+            data-loading="Creating accountâ€¦"
           >
             Create account
           </span>
@@ -309,7 +308,8 @@ $csrfToken = csrf_token();
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="js/auth.js"></script>
+<script src="assets/js/auth.js"></script>
 
 </body>
 </html>
+

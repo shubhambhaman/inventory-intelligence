@@ -34,7 +34,7 @@ const CSRF_TOKEN_BYTES = 32;
 function csrf_ensure_session(): void
 {
     if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+        require_once __DIR__ . '/session.php';
     }
 
     if (session_status() !== PHP_SESSION_ACTIVE) {

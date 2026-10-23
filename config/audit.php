@@ -15,14 +15,19 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/request_context.php';
-require_once __DIR__ . '/db.php';
 
-
-/**
- * ---------------------------------------------------------
- * Return the current authenticated user ID.
- * ---------------------------------------------------------
+/*
+ * Normal application requests load the configured database connection.
+ * An explicitly opted-in isolated test may inject its own verified PDO.
  */
+if (
+    !defined('IIP_AUDIT_SKIP_DB_BOOTSTRAP')
+    || IIP_AUDIT_SKIP_DB_BOOTSTRAP !== true
+) {
+    require_once __DIR__ . '/db.php';
+}
+
+/** Return the current authenticated user ID. */
 function audit_get_actor_id(): ?int
 {
     if (
@@ -37,14 +42,9 @@ function audit_get_actor_id(): ?int
     return $actorId > 0 ? $actorId : null;
 }
 
-
 /**
- * ---------------------------------------------------------
  * Return the current tenant ID.
- * ---------------------------------------------------------
- *
- * Tenant ID MUST come from the authenticated session.
- * It must never be accepted from browser input.
+ * Tenant ID must come from the authenticated session, never browser input.
  */
 function audit_get_tenant_id(): ?int
 {
@@ -57,32 +57,13 @@ function audit_get_tenant_id(): ?int
     return $tenantId > 0 ? $tenantId : null;
 }
 
-
-/**
- * ---------------------------------------------------------
- * Get the current request correlation ID.
- * ---------------------------------------------------------
- *
- * Request ID generation is centralized in:
- *
- * config/request_context.php
- *
- * This wrapper keeps the existing audit API unchanged.
- */
+/** Get the centralized request correlation ID. */
 function audit_get_request_id(): string
 {
     return app_request_id();
 }
 
-
-/**
- * ---------------------------------------------------------
- * Remove sensitive fields recursively from audit data.
- * ---------------------------------------------------------
- *
- * Passwords, tokens, secrets and credentials must never
- * be persisted in the audit trail.
- */
+/** Remove sensitive fields recursively from audit data. */
 function audit_sanitize_data(mixed $data): mixed
 {
     if (!is_array($data)) {
@@ -90,40 +71,29 @@ function audit_sanitize_data(mixed $data): mixed
     }
 
     $sensitiveKeys = [
-        'password',
-        'password_hash',
-        'current_password',
-        'new_password',
-        'confirm_password',
-        'token',
-        'access_token',
-        'refresh_token',
-        'api_token',
-        'secret',
-        'client_secret',
-        'authorization',
-        'cookie',
-        'session_id',
-        'php_session_id',
+        'password', 'password_hash', 'current_password', 'new_password',
+        'confirm_password', 'database_password', 'db_password', 'passwd',
+        'passphrase',
+        'token', 'access_token', 'refresh_token', 'api_token', 'auth_token',
+        'bearer_token', 'session_token', 'id_token', 'csrf_token',
+        'secret', 'client_secret', 'client_key', 'api_key', 'access_key',
+        'private_key', 'secret_key', 'encryption_key', 'signing_key',
+        'authorization', 'cookie', 'set_cookie', 'session_id',
+        'php_session_id', 'credential', 'credentials',
     ];
 
     $sanitized = [];
 
     foreach ($data as $key => $value) {
-
-        $normalizedKey = strtolower(
-            str_replace(
-                ['-', ' '],
-                '_',
-                (string) $key
-            )
+        $normalizedKey = strtolower(trim((string) $key));
+        $normalizedKey = preg_replace(
+            '/[^a-z0-9]+/',
+            '_',
+            $normalizedKey
         );
+        $normalizedKey = trim((string) $normalizedKey, '_');
 
-        if (in_array(
-            $normalizedKey,
-            $sensitiveKeys,
-            true
-        )) {
+        if (in_array($normalizedKey, $sensitiveKeys, true)) {
             $sanitized[$key] = '[REDACTED]';
             continue;
         }
@@ -134,42 +104,91 @@ function audit_sanitize_data(mixed $data): mixed
     return $sanitized;
 }
 
-
-/**
- * ---------------------------------------------------------
- * Convert audit snapshot data into JSON.
- * ---------------------------------------------------------
- *
- * Returns NULL when no snapshot is supplied.
- */
-function audit_encode_snapshot(
-    mixed $data
-): ?string {
-
+/** Convert sanitized snapshot data into JSON; return NULL for no snapshot. */
+function audit_encode_snapshot(mixed $data): ?string
+{
     if ($data === null) {
         return null;
     }
 
-    $safeData = audit_sanitize_data($data);
-
     return json_encode(
-        $safeData,
-        JSON_UNESCAPED_UNICODE |
-        JSON_UNESCAPED_SLASHES |
-        JSON_THROW_ON_ERROR
+        audit_sanitize_data($data),
+        JSON_UNESCAPED_UNICODE
+        | JSON_UNESCAPED_SLASHES
+        | JSON_THROW_ON_ERROR
     );
 }
 
+/** Redact credential-like values from free-text audit reasons. */
+function audit_sanitize_reason(?string $reason): ?string
+{
+    if ($reason === null) {
+        return null;
+    }
+
+    $reason = trim($reason);
+
+    if ($reason === '') {
+        return null;
+    }
+
+    // Preserve the Authorization Bearer scheme while hiding its credential.
+    $reason = preg_replace(
+        '~(\bAuthorization\s*:\s*)(Bearer\s+)\S+~i',
+        '$1$2[REDACTED]',
+        $reason
+    ) ?? $reason;
+
+    // Redact other Authorization header values.
+    $reason = preg_replace(
+        '~(\bAuthorization\s*:\s*)(?!Bearer\b)\S+~i',
+        '$1[REDACTED]',
+        $reason
+    ) ?? $reason;
+
+    // Authorization is handled separately above.
+    $sensitiveNames =
+        'password|passwd|passphrase|secret|token|access_token|refresh_token|' .
+        'api_token|api_key|client_key|client_secret|secret_key|' .
+        'private_key|cookie|set_cookie|session_id|php_session_id|' .
+        'credential|credentials|access_key|encryption_key|signing_key|' .
+        'auth_token|bearer_token|id_token|csrf_token|database_password|' .
+        'db_password|password_hash|current_password|new_password|' .
+        'confirm_password';
+
+    // Redact double-quoted credential values.
+    $quotedPattern = '~\b(' . $sensitiveNames .
+        ')\b(\s*[:=]\s*)"[^"]*"~iu';
+
+    $reason = preg_replace(
+        $quotedPattern,
+        '$1$2[REDACTED]',
+        $reason
+    ) ?? $reason;
+
+    // Redact single-quoted and unquoted credential values.
+    $pattern = '~\b(' . $sensitiveNames .
+        ')\b(\s*[:=]\s*)(\'[^\']*\'|[^\s,;]+)~iu';
+
+    $reason = preg_replace(
+        $pattern,
+        '$1$2[REDACTED]',
+        $reason
+    ) ?? $reason;
+
+    // Redact standalone Bearer credentials.
+    $reason = preg_replace(
+        '~(\bBearer\s+)\S+~i',
+        '$1[REDACTED]',
+        $reason
+    ) ?? $reason;
+
+    return $reason;
+}
 
 /**
- * ---------------------------------------------------------
  * Record an audit event.
- * ---------------------------------------------------------
- *
- * IMPORTANT:
- * - tenant_id is never accepted from the browser
- * - actor_id is never accepted from the browser
- * - request_id is generated/derived server-side
+ * Tenant, actor and request IDs are derived server-side.
  *
  * @param string      $eventType
  * @param string      $entityType
@@ -177,7 +196,6 @@ function audit_encode_snapshot(
  * @param mixed       $before
  * @param mixed       $after
  * @param string|null $reason
- *
  * @return int Audit event ID
  */
 function audit_event(
@@ -188,98 +206,56 @@ function audit_event(
     mixed $after = null,
     ?string $reason = null
 ): int {
-
     global $pdo;
 
-    $tenantId = audit_get_tenant_id();
-    $actorId  = audit_get_actor_id();
+    if (!($pdo instanceof PDO)) {
+        throw new RuntimeException(
+            'Unable to record audit event: database connection is unavailable.'
+        );
+    }
 
-    /**
-     * Tenant context is mandatory.
-     */
+    $tenantId = audit_get_tenant_id();
+    $actorId = audit_get_actor_id();
+
     if ($tenantId === null) {
         throw new RuntimeException(
             'Unable to record audit event: tenant context is missing.'
         );
     }
 
-    /**
-     * Actor context is mandatory for current V1 audit events.
-     */
     if ($actorId === null) {
         throw new RuntimeException(
             'Unable to record audit event: actor context is missing.'
         );
     }
 
-
-    /**
-     * Normalize identifiers.
-     */
     $eventType = trim($eventType);
     $entityType = trim($entityType);
     $entityId = trim((string) $entityId);
 
-
-    /**
-     * Validate event type.
-     */
     if ($eventType === '') {
         throw new InvalidArgumentException(
             'Audit event type is required.'
         );
     }
 
-
-    /**
-     * Validate entity type.
-     */
     if ($entityType === '') {
         throw new InvalidArgumentException(
             'Audit entity type is required.'
         );
     }
 
-
-    /**
-     * Validate entity ID.
-     */
     if ($entityId === '') {
         throw new InvalidArgumentException(
             'Audit entity ID is required.'
         );
     }
 
-
-    /**
-     * Prepare safe before/after snapshots.
-     */
     $beforeJson = audit_encode_snapshot($before);
-    $afterJson  = audit_encode_snapshot($after);
-
-
-    /**
-     * Get centralized request ID.
-     */
+    $afterJson = audit_encode_snapshot($after);
     $requestId = audit_get_request_id();
+    $reason = audit_sanitize_reason($reason);
 
-
-    /**
-     * Normalize optional reason.
-     */
-    if ($reason !== null) {
-
-        $reason = trim($reason);
-
-        if ($reason === '') {
-            $reason = null;
-        }
-    }
-
-
-    /**
-     * Insert immutable audit event.
-     */
     $sql = "
         INSERT INTO audit_events (
             tenant_id,
@@ -308,15 +284,15 @@ function audit_event(
     $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
-        ':tenant_id'   => $tenantId,
-        ':actor_id'    => $actorId,
-        ':event_type'  => $eventType,
+        ':tenant_id' => $tenantId,
+        ':actor_id' => $actorId,
+        ':event_type' => $eventType,
         ':entity_type' => $entityType,
-        ':entity_id'   => $entityId,
+        ':entity_id' => $entityId,
         ':before_json' => $beforeJson,
-        ':after_json'  => $afterJson,
-        ':reason'      => $reason,
-        ':request_id'  => $requestId,
+        ':after_json' => $afterJson,
+        ':reason' => $reason,
+        ':request_id' => $requestId,
     ]);
 
     return (int) $pdo->lastInsertId();

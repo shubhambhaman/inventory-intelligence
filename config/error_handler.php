@@ -171,3 +171,28 @@ function api_server_error(
         $message
     );
 }
+
+
+/**
+ * Standard successful API response.
+ */
+function api_success_response(
+    array $data,
+    int $statusCode = 200
+): never {
+
+    http_response_code($statusCode);
+
+    header('Content-Type: application/json; charset=utf-8');
+
+    echo json_encode(
+        array_merge(
+            ['success' => true],
+            $data
+        ),
+        JSON_UNESCAPED_UNICODE |
+        JSON_UNESCAPED_SLASHES
+    );
+
+    exit;
+}

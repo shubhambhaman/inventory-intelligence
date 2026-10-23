@@ -14,7 +14,7 @@ declare(strict_types=1);
  * - Return centralized API errors
  */
 
-session_start();
+require_once __DIR__ . '/../../../config/session.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -546,9 +546,7 @@ try {
      * audit_event() gets actor_id and tenant_id
      * from the authenticated session.
      */
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_start();
-    }
+
 
     if (!session_regenerate_id(true)) {
         throw new RuntimeException(

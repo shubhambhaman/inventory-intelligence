@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 header('Content-Type: application/json; charset=utf-8');
 
+require_once __DIR__ . '/../../../config/session.php';
 require_once __DIR__ . '/../../../config/csrf.php';
 
 /**
@@ -32,20 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
     exit;
 }
 
-/**
- * Configure the session cookie consistently
- * with login/signup.
- */
-session_set_cookie_params([
-    'httponly' => true,
-    'samesite' => 'Lax',
-    'secure' => (
-        !empty($_SERVER['HTTPS']) &&
-        $_SERVER['HTTPS'] !== 'off'
-    )
-]);
 
-session_start();
 
 /**
  * CSRF protection.

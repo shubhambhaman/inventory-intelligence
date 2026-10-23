@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 /**
  * Start the existing PHP session.
  */
-session_start();
+require_once __DIR__ . '/../../../config/session.php';
 
 /**
  * Authentication check.

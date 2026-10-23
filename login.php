@@ -13,27 +13,8 @@ declare(strict_types=1);
  * - Redirect already-authenticated users
  */
 
+require_once __DIR__ . '/config/session.php';
 require_once __DIR__ . '/config/csrf.php';
-
-/**
- * Configure secure PHP session cookie.
- *
- * - HttpOnly prevents JavaScript from reading the session cookie.
- * - SameSite=Lax provides CSRF protection at cookie level.
- * - Secure is enabled automatically when HTTPS is active.
- */
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'secure' => (
-        !empty($_SERVER['HTTPS']) &&
-        $_SERVER['HTTPS'] !== 'off'
-    ),
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-
-session_start();
 
 /**
  * Redirect already-authenticated users.
@@ -71,7 +52,7 @@ $csrfToken = csrf_token();
     rel="stylesheet"
   >
 
-  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
 </head>
 
 <body>
@@ -183,7 +164,7 @@ $csrfToken = csrf_token();
         >
 
 
-        <!-- Error alert (shown by js/auth.js) -->
+        <!-- Error alert (shown by assets/js/auth.js) -->
         <div
           class="alert"
           role="alert"
@@ -351,7 +332,7 @@ $csrfToken = csrf_token();
 
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="js/auth.js"></script>
+<script src="assets/js/auth.js"></script>
 
 </body>
 </html>

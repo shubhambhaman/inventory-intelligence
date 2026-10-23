@@ -1,0 +1,616 @@
+
+.module-warehouses {
+    --warehouse-ink: #172033;
+    --warehouse-muted: #738096;
+    --warehouse-line: #e6eaf0;
+    --warehouse-brand: #3157d5;
+    --warehouse-green: #15865b;
+    --warehouse-red: #c83e4d;
+
+    color: var(--warehouse-ink);
+    font: 14px Inter, system-ui, sans-serif;
+    margin: 0 auto;
+    max-width: 1400px;
+}
+
+.module-warehouses * {
+    box-sizing: border-box;
+}
+
+.module-warehouses button,
+.module-warehouses input,
+.module-warehouses select {
+    font: inherit;
+}
+
+/* Header */
+.module-warehouses .crumb {
+    color: var(--warehouse-muted);
+    font-size: 12px;
+    margin-bottom: 18px;
+}
+
+.module-warehouses .crumb a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.module-warehouses .head {
+    align-items: flex-start;
+    display: flex;
+    gap: 18px;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.module-warehouses .eyebrow {
+    color: var(--warehouse-brand);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.module-warehouses .head h1 {
+    font-size: 28px;
+    letter-spacing: -0.8px;
+    margin: 0 0 8px;
+}
+
+.module-warehouses .head p {
+    color: var(--warehouse-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Buttons */
+.module-warehouses .btn {
+    align-items: center;
+    background: #fff;
+    border: 1px solid var(--warehouse-line);
+    border-radius: 9px;
+    color: var(--warehouse-ink);
+    cursor: pointer;
+    display: inline-flex;
+    font-weight: 650;
+    gap: 8px;
+    justify-content: center;
+    padding: 10px 14px;
+}
+
+.module-warehouses .btn-primary {
+    background: var(--warehouse-brand);
+    border-color: var(--warehouse-brand);
+    color: #fff;
+}
+
+.module-warehouses .btn-danger-outline {
+    border-color: #efc7cc;
+    color: var(--warehouse-red);
+}
+
+.module-warehouses .btn:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+/* Summary cards */
+.module-warehouses .stats {
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 20px;
+}
+
+.module-warehouses .stat,
+.module-warehouses .panel {
+    background: #fff;
+    border: 1px solid var(--warehouse-line);
+    border-radius: 13px;
+    box-shadow: 0 8px 28px #192a4b0a;
+}
+
+.module-warehouses .stat {
+    align-items: center;
+    display: flex;
+    gap: 13px;
+    padding: 18px;
+}
+
+.module-warehouses .stat-icon {
+    align-items: center;
+    background: #eaf0ff;
+    border-radius: 12px;
+    color: var(--warehouse-brand);
+    display: grid;
+    flex-shrink: 0;
+    font-size: 18px;
+    height: 42px;
+    place-items: center;
+    width: 42px;
+}
+
+.module-warehouses .stat:nth-child(2) .stat-icon {
+    background: #e7f7ef;
+    color: var(--warehouse-green);
+}
+
+.module-warehouses .stat:nth-child(3) .stat-icon {
+    background: #fff2df;
+    color: #a96a08;
+}
+
+.module-warehouses .label {
+    color: var(--warehouse-muted);
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.module-warehouses .value {
+    font-size: 23px;
+    font-weight: 800;
+}
+
+/* Panels */
+.module-warehouses .panel {
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.module-warehouses .panel-head {
+    align-items: center;
+    border-bottom: 1px solid var(--warehouse-line);
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 19px 21px;
+}
+
+.module-warehouses .panel-title {
+    font-weight: 800;
+}
+
+.module-warehouses .sub {
+    color: var(--warehouse-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 5px;
+}
+
+/* Search and filters */
+.module-warehouses .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 16px 21px;
+}
+
+.module-warehouses .field {
+    background: #fff;
+    border: 1px solid #dce2ec;
+    border-radius: 9px;
+    height: 40px;
+    min-width: 140px;
+    outline: none;
+    padding: 0 12px;
+}
+
+.module-warehouses .field:focus,
+.module-warehouses .form-field input:focus,
+.module-warehouses .form-field select:focus {
+    border-color: #8298f0;
+    box-shadow: 0 0 0 3px #3157d515;
+    outline: none;
+}
+
+.module-warehouses .search {
+    flex: 1;
+    min-width: 220px;
+}
+
+/* Warehouse table */
+.module-warehouses .table-wrap {
+    overflow: auto;
+}
+
+.module-warehouses table {
+    border-collapse: collapse;
+    min-width: 820px;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.module-warehouses th {
+    background: #fafbfd;
+    border-block: 1px solid var(--warehouse-line);
+    color: #78849a;
+    font-size: 10px;
+    letter-spacing: 0.7px;
+    padding: 13px 20px;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.module-warehouses td {
+    border-bottom: 1px solid #eff1f5;
+    font-size: 13px;
+    padding: 15px 20px;
+    vertical-align: middle;
+}
+
+.module-warehouses tbody tr:hover {
+    background: #fbfcff;
+}
+
+.module-warehouses .name {
+    font-weight: 750;
+}
+
+.module-warehouses .small {
+    color: var(--warehouse-muted);
+    font-size: 11px;
+    margin-top: 4px;
+    white-space: normal;
+}
+
+/* Status */
+.module-warehouses .status {
+    align-items: center;
+    border-radius: 20px;
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 750;
+    gap: 6px;
+    padding: 6px 9px;
+}
+
+.module-warehouses .status::before {
+    background: currentColor;
+    border-radius: 50%;
+    content: "";
+    height: 6px;
+    width: 6px;
+}
+
+.module-warehouses .status.active {
+    background: #e7f7ef;
+    color: #14794f;
+}
+
+.module-warehouses .status.inactive {
+    background: #f0f2f5;
+    color: #687386;
+}
+
+/* Row actions */
+.module-warehouses .actions {
+    display: flex;
+    gap: 7px;
+}
+
+.module-warehouses .icon-btn {
+    background: #fff;
+    border: 1px solid var(--warehouse-line);
+    border-radius: 8px;
+    color: #66738a;
+    cursor: pointer;
+    height: 32px;
+    width: 32px;
+}
+
+.module-warehouses .icon-btn:hover {
+    color: var(--warehouse-brand);
+}
+
+.module-warehouses .icon-btn.danger:hover {
+    color: var(--warehouse-red);
+}
+
+.module-warehouses .icon-btn.success:hover {
+    color: var(--warehouse-green);
+}
+
+/* Notices and empty state */
+.module-warehouses .notice {
+    border-radius: 9px;
+    display: none;
+    font-size: 12px;
+    margin: 0 21px 14px;
+    padding: 12px 14px;
+}
+
+.module-warehouses .notice.show {
+    display: block;
+}
+
+.module-warehouses .notice.success {
+    background: #e7f7ef;
+    color: #146c49;
+}
+
+.module-warehouses .notice.error {
+    background: #fff0f1;
+    color: #a62d3a;
+}
+
+.module-warehouses .empty {
+    color: var(--warehouse-muted);
+    padding: 42px 20px;
+    text-align: center;
+}
+
+.module-warehouses .empty strong {
+    color: var(--warehouse-ink);
+    display: block;
+    margin: 8px;
+}
+
+/* Pagination footer */
+.module-warehouses .footer {
+    align-items: center;
+    border-top: 1px solid var(--warehouse-line);
+    color: var(--warehouse-muted);
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 12px;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 14px 21px;
+}
+
+.module-warehouses .pages {
+    display: flex;
+    gap: 5px;
+}
+
+.module-warehouses .pages button {
+    background: #fff;
+    border: 1px solid var(--warehouse-line);
+    border-radius: 7px;
+    cursor: pointer;
+    height: 31px;
+    min-width: 31px;
+}
+
+.module-warehouses .pages .current {
+    background: var(--warehouse-brand);
+    border-color: var(--warehouse-brand);
+    color: #fff;
+}
+
+.module-warehouses .pages button:disabled {
+    opacity: 0.4;
+}
+
+/* User warehouse access */
+.module-warehouses .access-body {
+    padding: 20px 21px;
+}
+
+.module-warehouses .access-form {
+    align-items: start;
+    display: grid;
+    gap: 14px;
+    grid-template-columns:
+        minmax(0, 0.8fr)
+        minmax(0, 1.2fr)
+        auto;
+}
+
+.module-warehouses .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.module-warehouses .form-field label {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+    min-height: 17px;
+}
+
+.module-warehouses .form-field input,
+.module-warehouses .form-field select {
+    background: #fff;
+    border: 1px solid #dce2ec;
+    border-radius: 9px;
+    height: 41px;
+    min-width: 0;
+    padding: 0 11px;
+    width: 100%;
+}
+
+.module-warehouses .form-field small {
+    color: var(--warehouse-muted);
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+/* Keep access buttons aligned with the input fields */
+.module-warehouses .access-actions {
+    align-items: center;
+    align-self: start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 24px;
+}
+
+.module-warehouses .access-actions .btn {
+    min-height: 41px;
+    white-space: nowrap;
+}
+
+.module-warehouses .access-note {
+    color: var(--warehouse-muted);
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 14px 0 0;
+    overflow-wrap: anywhere;
+}
+
+.module-warehouses .access-note strong {
+    color: var(--warehouse-ink);
+}
+
+/* Modal */
+.module-warehouses .backdrop {
+    align-items: center;
+    background: #14203977;
+    display: none;
+    inset: 0;
+    justify-content: center;
+    padding: 18px;
+    position: fixed;
+    z-index: 1000;
+}
+
+.module-warehouses .backdrop.open {
+    display: flex;
+}
+
+.module-warehouses .modal {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 24px 90px #101c3340;
+    max-height: 92vh;
+    overflow: auto;
+    width: min(650px, 100%);
+}
+
+.module-warehouses .modal-head,
+.module-warehouses .modal-foot {
+    align-items: center;
+    border-bottom: 1px solid var(--warehouse-line);
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 18px 22px;
+}
+
+.module-warehouses .modal-head h2 {
+    font-size: 19px;
+    margin: 0 0 5px;
+}
+
+.module-warehouses .modal-head p {
+    color: var(--warehouse-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.module-warehouses .modal-body {
+    padding: 22px;
+}
+
+.module-warehouses .grid {
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.module-warehouses .form-field.full {
+    grid-column: 1 / -1;
+}
+
+.module-warehouses .error-text {
+    color: var(--warehouse-red);
+    font-size: 11px;
+    min-height: 12px;
+}
+
+.module-warehouses .modal-foot {
+    border-bottom: 0;
+    border-top: 1px solid var(--warehouse-line);
+    justify-content: flex-end;
+}
+
+/* Tablet */
+@media (max-width: 1100px) {
+    .module-warehouses .access-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .module-warehouses .access-actions {
+        grid-column: 1 / -1;
+        padding-top: 0;
+    }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+    .module-warehouses .head {
+        flex-direction: column;
+    }
+
+    .module-warehouses .stats {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .module-warehouses .grid,
+    .module-warehouses .access-form {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .module-warehouses .form-field.full {
+        grid-column: auto;
+    }
+
+    .module-warehouses .head h1 {
+        font-size: 25px;
+    }
+
+    .module-warehouses .panel-head {
+        align-items: flex-start;
+    }
+
+    .module-warehouses .access-actions {
+        grid-column: auto;
+        padding-top: 0;
+    }
+
+    .module-warehouses .access-actions .btn {
+        flex: 1 1 auto;
+    }
+
+    .module-warehouses .modal-head,
+    .module-warehouses .modal-foot {
+        padding: 16px;
+    }
+
+    .module-warehouses .modal-body {
+        padding: 16px;
+    }
+}
+
+/* Small mobile screens */
+@media (max-width: 420px) {
+    .module-warehouses .access-body {
+        padding: 16px;
+    }
+
+    .module-warehouses .filters {
+        padding: 14px;
+    }
+
+    .module-warehouses .search {
+        min-width: 100%;
+    }
+
+    .module-warehouses .panel-head {
+        padding: 16px;
+    }
+
+    .module-warehouses .access-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .module-warehouses .access-actions .btn {
+        width: 100%;
+    }
+}
